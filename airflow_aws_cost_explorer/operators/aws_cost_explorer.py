@@ -46,7 +46,7 @@ class AbstractAWSCostExplorerOperator(BaseOperator):
         """
         Query Cost Explorer API
 
-        :param day:             Date to be exported as YYYY-MM-DD (default: yesterday)
+        :param day:             Date to be exported as string in YYYY-MM-DD format or date/datetime instance (default: yesterday)
         :type day:              str, date or datetime
         :param aws_conn_id:     Cost Explorer AWS connection id (default: aws_default)
         :type aws_conn_id:      str
@@ -59,9 +59,9 @@ class AbstractAWSCostExplorerOperator(BaseOperator):
         aws_hook = AwsHook(aws_conn_id)
         region_name = region_name or aws_hook.get_session().region_name
         ce = aws_hook.get_client_type('ce', region_name=region_name)
-        if day is None:
+        if not day or day.lower() == 'yesterday':
             ds = datetime.today() - timedelta(days=1)
-        elif isinstance(day, date):
+        elif isinstance(day, date): # datetime is a subclass of date
             ds = day
         else:
             ds = datetime.fromisoformat(day)
@@ -81,8 +81,8 @@ class AbstractAWSCostExplorerOperator(BaseOperator):
         while True:
             request = {
                 'TimePeriod': {
-                    'Start': (ds - timedelta(days=1)).isoformat()[:10],
-                    'End': ds.isoformat()[:10]
+                    'Start': ds.isoformat()[:10],
+                    'End': (ds + timedelta(days=1)).isoformat()[:10]
                 },
                 'GroupBy': [
                     {
@@ -138,7 +138,7 @@ class AbstractAWSCostExplorerOperator(BaseOperator):
         """
         Query AWS Cost Explorer and save result to file
 
-        :param day:             Date to be exported as YYYY-MM-DD (default: yesterday)
+        :param day:             Date to be exported as string in YYYY-MM-DD format or date/datetime instance (default: yesterday)
         :type day:              str, date or datetime
         :param destination:     Destination file complete path
         :type destination:      str
@@ -170,7 +170,7 @@ class AWSCostExplorerToLocalFileOperator(AbstractAWSCostExplorerOperator):
     """
     AWS Cost Explorer to local file Operator
 
-    :param day:             Date to be exported as YYYY-MM-DD (default: yesterday)
+    :param day:             Date to be exported as string in YYYY-MM-DD format or date/datetime instance (default: yesterday)
     :type day:              str, date or datetime
     :param aws_conn_id:     Cost Explorer AWS connection id (default: aws_default)
     :type aws_conn_id:      str
@@ -229,7 +229,7 @@ class AWSCostExplorerToS3Operator(AbstractAWSCostExplorerOperator):
     """
     AWS Cost Explorer to S3 Operator
 
-    :param day:             Date to be exported as YYYY-MM-DD (default: yesterday)
+    :param day:             Date to be exported as string in YYYY-MM-DD format or date/datetime instance (default: yesterday)
     :type day:              str, date or datetime
     :param aws_conn_id:     Cost Explorer AWS connection id (default: aws_default)
     :type aws_conn_id:      str

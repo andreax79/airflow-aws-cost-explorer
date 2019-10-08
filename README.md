@@ -26,7 +26,7 @@ data to local file or S3 in Parquet, JSON, or CSV format.
 ### AWSCostExplorerToS3Operator
 ```AWS Cost Explorer to S3 Operator
 
-    :param day:             Date to be exported as YYYY-MM-DD (default: yesterday)
+    :param day:             Date to be exported as string in YYYY-MM-DD format or date/datetime instance (default: yesterday)
     :type day:              str, date or datetime
     :param aws_conn_id:     Cost Explorer AWS connection id (default: aws_default)
     :type aws_conn_id:      str
@@ -48,7 +48,7 @@ data to local file or S3 in Parquet, JSON, or CSV format.
 ### AWSCostExplorerToLocalFileOperator
 ```AWS Cost Explorer to local file Operator
 
-    :param day:             Date to be exported as YYYY-MM-DD (default: yesterday)
+    :param day:             Date to be exported as string in YYYY-MM-DD format or date/datetime instance (default: yesterday)
     :type day:              str, date or datetime
     :param aws_conn_id:     Cost Explorer AWS connection id (default: aws_default)
     :type aws_conn_id:      str
