@@ -11,3 +11,11 @@
 ### Fix
 
 - fix day parameter
+
+## 1.0.2
+
+2019-10-09
+
+### Fix
+
+- fix day parser for Python < 3.7

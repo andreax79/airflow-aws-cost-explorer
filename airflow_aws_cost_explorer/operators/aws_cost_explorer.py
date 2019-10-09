@@ -17,6 +17,7 @@
 
 import tempfile
 import os
+import dateutil.parser
 from datetime import datetime, date, timedelta
 from airflow.hooks.S3_hook import S3Hook
 from airflow.contrib.hooks.aws_hook import AwsHook
@@ -64,12 +65,12 @@ class AbstractAWSCostExplorerOperator(BaseOperator):
         elif isinstance(day, date): # datetime is a subclass of date
             ds = day
         else:
-            ds = datetime.fromisoformat(day)
-        self.log.info('day: %s aws_conn_id: %s region_name: %s metric: %s' % (
-            day,
-            aws_conn_id,
-            region_name,
-            metric))
+            ds = dateutil.parser.parse(day)
+        self.log.info('ds: {ds:%Y-%m-%d} aws_conn_id: {aws_conn_id} region_name: {region_name} metric: {metric}'.format(
+            ds=ds,
+            aws_conn_id=aws_conn_id,
+            region_name=region_name,
+            metric=metric))
 
         response = None
         next_token = None
