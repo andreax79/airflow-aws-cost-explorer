@@ -1,11 +1,9 @@
-from airflow_aws_cost_explorer.plugin import (
-    AWSCostExplorerPlugin,
+from airflow_aws_cost_explorer.operators.aws_cost_explorer import (
     AWSCostExplorerToS3Operator,
     AWSCostExplorerToLocalFileOperator
 )
 
 __all__ = [
-    'AWSCostExplorerPlugin',
-    'AWSCostExplorerToS3Operator'
+    'AWSCostExplorerToS3Operator',
     'AWSCostExplorerToLocalFileOperator',
 ]

@@ -19,3 +19,11 @@
 ### Fix
 
 - fix day parser for Python < 3.7
+
+## 1.1.0
+
+2019-10-09
+
+### Add
+
+- add multiple metrics export

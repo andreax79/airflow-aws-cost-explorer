@@ -39,9 +39,9 @@ data to local file or S3 in Parquet, JSON, or CSV format.
     :param s3_key:          Destination S3 key
     :type s3_key:           str
     :param file_format:     Destination file format (parquet, json or csv default: parquet)
-    :type file_format:      str
-    :param metric:          Metric (default: UnblendedCost)
-    :type metric:           str
+    :type file_format:      str or FileFormat
+    :param metrics:         Metrics (default: UnblendedCost, BlendedCost)
+    :type metrics:          list
 
 ```
 
@@ -57,9 +57,9 @@ data to local file or S3 in Parquet, JSON, or CSV format.
     :param destination:     Destination file complete path
     :type destination:      str
     :param file_format:     Destination file format (parquet, json or csv default: parquet)
-    :type file_format:      str
-    :param metric:          Metric (default: UnblendedCost)
-    :type metric:           str
+    :type file_format:      str or FileFormat
+    :param metrics:         Metrics (default: UnblendedCost, BlendedCost)
+    :type metrics:          list
 
 ```
 
@@ -106,5 +106,4 @@ data to local file or S3 in Parquet, JSON, or CSV format.
 
 * Apache Airflow - https://github.com/apache/airflow
 * fastparquet - https://github.com/dask/fastparquet
-* AWS Cost Explorer - https://aws.amazon.com/aws-cost-management/aws-cost-explorer/
-
+* AWS Cost Explorer - https://aws.amazon.com/aws-cost-management/aws-cost-explorer/ [API Reference](https://docs.aws.amazon.com/aws-cost-management/latest/APIReference/API_GetCostAndUsage.html)

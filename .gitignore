@@ -114,4 +114,5 @@ venv.bak/
 /test_virtualenv/plugins/
 /test_virtualenv/*.pid
 /test_virtualenv/dags/.gitignore
+/cost_explorer
 
