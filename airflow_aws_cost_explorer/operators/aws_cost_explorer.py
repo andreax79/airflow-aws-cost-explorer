@@ -136,12 +136,30 @@ class AbstractAWSCostExplorerOperator(BaseOperator):
 
     def write_parquet(self, data, destination):
         # Write data to Parquet file
-        import pandas as pd
-        import numpy as np
-        import fastparquet
-        data['the_date'] = np.array(data['the_date'], dtype=np.datetime64)
-        df = pd.DataFrame(data, columns=data.keys())
-        fastparquet.write(destination, df)
+        try:
+            import pandas as pd
+            import numpy as np
+        except:
+            raise ValueError('Missing Parquet support - Please install pyarrow or fastparquet')
+        if not data['the_date']: # If empty
+            # Create an empty array with the correct data types
+            data = np.empty(0, dtype=[('the_date', 'datetime64'), ('service', 'str'), ('metric', 'str'), ('amount', 'float64')])
+        else:
+            data['the_date'] = [ dateutil.parser.parse(x) for x in data['the_date'] ]
+        df = pd.DataFrame(data, columns=[ 'the_date', 'service', 'metric', 'amount' ])
+        try:
+            import pyarrow.parquet
+            pyarrow.parquet.write_table(
+                    table=pyarrow.Table.from_pandas(df),
+                    where=destination,
+                    compression='SNAPPY',
+                    flavor='spark')
+        except ImportError:
+            try:
+                import fastparquet
+                fastparquet.write(destination, df, times='int96')
+            except:
+                raise ValueError('Missing Parquet support - Please install pyarrow or fastparquet')
 
     def write_json(self, data, destination):
         # Write data to JSON file

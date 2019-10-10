@@ -15,7 +15,7 @@
 #   limitations under the Licens
 #
 __author__ = 'Andrea Bonomi <andrea.bonomi@gmail.com>'
-__version__ = '1.1.0'
+__version__ = '1.1.1'
 
 from airflow.plugins_manager import AirflowPlugin
 from airflow_aws_cost_explorer.operators.aws_cost_explorer import (

@@ -27,3 +27,11 @@
 ### Add
 
 - add multiple metrics export
+
+## 1.1.1
+
+2019-10-11
+
+### Fix
+
+- fix dates in parquet files

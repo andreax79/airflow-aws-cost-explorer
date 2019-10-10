@@ -7,13 +7,21 @@ data to local file or S3 in Parquet, JSON, or CSV format.
 
 * Airflow Versions
     * 1.10.3 or newer
-* fastparquet (optional, for writing Parquet files)
+* pyarrow or fastparquet (optional, for writing Parquet files)
 
 ### Deployment Instructions
 
 1. Install the plugin
 
-    pip install airflow-aws-cost-explorer fastparquet
+    pip install airflow-aws-cost-explorer
+
+2. Optional for writing Parquet files - Install pyarrow or fastparquet
+
+    pip install pyarrow
+
+    or
+
+    pip install fastparquet
 
 2. Restart the Airflow Web Server
 
@@ -105,5 +113,6 @@ data to local file or S3 in Parquet, JSON, or CSV format.
 ### Links
 
 * Apache Airflow - https://github.com/apache/airflow
+* Apache Arrow - https://github.com/apache/arrow
 * fastparquet - https://github.com/dask/fastparquet
 * AWS Cost Explorer - https://aws.amazon.com/aws-cost-management/aws-cost-explorer/ [API Reference](https://docs.aws.amazon.com/aws-cost-management/latest/APIReference/API_GetCostAndUsage.html)
