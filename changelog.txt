@@ -35,3 +35,11 @@
 ### Fix
 
 - fix dates in parquet files
+
+## 1.2.0
+
+2019-10-18
+
+### Add
+
+- add bucket size & object number operator

@@ -27,71 +27,65 @@ from airflow_aws_cost_explorer.operators.commons import (
 )
 
 __all__ = [
-    'AWSCostExplorerToLocalFileOperator',
-    'AWSCostExplorerToS3Operator',
+    'AWSBucketSizeToLocalFileOperator',
+    'AWSBucketSizeToS3Operator',
     'Metric',
     'FileFormat'
 ]
 
-DEFAULT_METRICS = [ 'UnblendedCost', 'BlendedCost' ]
-DTYPE = [('the_date', 'datetime64'), ('service', 'str'), ('metric', 'str'), ('amount', 'float64')]
+DEFAULT_METRICS = [ 'bucket_size', 'number_of_objects' ]
+DTYPE = [('the_date', 'datetime64'), ('bucket_name', 'str'), ('bucket_size', 'uint'), ('number_of_objects', 'uint')]
 
-Metric = Enum('Metric', 'AmortizedCost BlendedCost NetAmortizedCost NetUnblendedCost NormalizedUsageAmount UnblendedCost UsageQuantity')
+Metric = Enum('Metric', 'bucket_size number_of_objects')
 
 
-class AbstractAWSCostExplorerOperator(AbstractOperator):
+class AbstractAWSBucketSizeOperator(AbstractOperator):
 
     dtype = DTYPE
 
+    def get_metric(self, ds, cloudwatch, bucket_name, metric_name, storage_type, statistic='Average'):
+        response = cloudwatch.get_metric_statistics(
+            Namespace='AWS/S3',
+            MetricName=metric_name,
+            Dimensions=[
+                {'Name': 'BucketName',  'Value': bucket_name},
+                {'Name': 'StorageType', 'Value': storage_type}
+            ],
+            Statistics=[statistic],
+            Period=86400,
+            StartTime=ds.isoformat(),
+            EndTime=(ds + timedelta(days=1)).isoformat()
+        )
+        if response["Datapoints"]:
+            return int(response['Datapoints'][0][statistic])
+        else:
+            return None
+
     def get_metrics_perform_query(self, ds, metrics, aws_hook, region_name):
-        ce = aws_hook.get_client_type('ce', region_name=region_name)
-        response = None
-        next_token = None
+        cloudwatch = aws_hook.get_client_type('cloudwatch', region_name=region_name)
+        the_date = ds.isoformat()[:10]
         data = {
             'the_date': [],
-            'service': [],
-            'metric': [],
-            'amount': []
+            'bucket_name': [],
+            'bucket_size': [],
+            'number_of_objects': [],
         }
-        while True:
-            request = {
-                'TimePeriod': {
-                    'Start': ds.isoformat()[:10],
-                    'End': (ds + timedelta(days=1)).isoformat()[:10]
-                },
-                'GroupBy': [
-                    {
-                        'Type': 'DIMENSION',
-                        'Key': 'SERVICE'
-                    }
-                ],
-                'Metrics': metrics,
-                'Granularity': 'DAILY'
-            }
-            if next_token is not None:
-                request['NextPageToken'] = next_token
-            response = ce.get_cost_and_usage(**request)
-            next_token = response.get('NextPageToken', None)
-            for item in response['ResultsByTime']:
-                the_date = item['TimePeriod']['Start']
-                for group in item['Groups']:
-                    service = group['Keys'][0]
-                    for metric in metrics:
-                        amount = float(group['Metrics'][metric]['Amount'])
-                        if amount > 0:
-                            data['the_date'].append(the_date)
-                            data['service'].append(service)
-                            data['metric'].append(metric)
-                            data['amount'].append(amount)
-            if not next_token:
-                break
+        # Get a list of all buckets
+        s3 = aws_hook.get_client_type('s3', region_name=region_name)
+        buckets = s3.list_buckets()
+        # Iterate through each bucket
+        for bucket in buckets['Buckets']:
+            data['the_date'].append(the_date)
+            data['bucket_name'].append(bucket['Name'])
+            data['bucket_size'].append(self.get_metric(ds, cloudwatch, bucket['Name'], 'BucketSizeBytes', 'StandardStorage'))
+            data['number_of_objects'].append(self.get_metric(ds, cloudwatch, bucket['Name'], 'NumberOfObjects', 'AllStorageTypes'))
         return data
 
 
-class AWSCostExplorerToLocalFileOperator(AbstractAWSCostExplorerOperator):
+class AWSBucketSizeToLocalFileOperator(AbstractAWSBucketSizeOperator):
 
     """
-    AWS Cost Explorer to local file Operator
+    AWS Bucket Size to local file Operator
 
     :param day:             Date to be exported as string in YYYY-MM-DD format or date/datetime instance (default: yesterday)
     :type day:              str, date or datetime
@@ -103,7 +97,7 @@ class AWSCostExplorerToLocalFileOperator(AbstractAWSCostExplorerOperator):
     :type destination:      str
     :param file_format:     Destination file format (parquet, json or csv default: parquet)
     :type file_format:      str or FileFormat
-    :param metrics:         Metrics (default: UnblendedCost, BlendedCost)
+    :param metrics:         Metrics (default: bucket_size, number_of_objects)
     :type metrics:          list
     """
 
@@ -146,10 +140,10 @@ class AWSCostExplorerToLocalFileOperator(AbstractAWSCostExplorerOperator):
         )
 
 
-class AWSCostExplorerToS3Operator(AbstractAWSCostExplorerOperator):
+class AWSBucketSizeToS3Operator(AbstractAWSBucketSizeOperator):
 
     """
-    AWS Cost Explorer to S3 Operator
+    AWS Bucket Size to S3 Operator
 
     :param day:             Date to be exported as string in YYYY-MM-DD format or date/datetime instance (default: yesterday)
     :type day:              str, date or datetime
@@ -165,7 +159,7 @@ class AWSCostExplorerToS3Operator(AbstractAWSCostExplorerOperator):
     :type s3_key:           str
     :param file_format:     Destination file format (parquet, json or csv default: parquet)
     :type file_format:      str or FileFormat
-    :param metrics:         Metrics (default: UnblendedCost, BlendedCost)
+    :param metrics:         Metrics (default: bucket_size, number_of_objects)
     :type metrics:          list
     """
 

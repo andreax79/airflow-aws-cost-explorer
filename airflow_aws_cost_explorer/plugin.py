@@ -15,24 +15,35 @@
 #   limitations under the Licens
 #
 __author__ = 'Andrea Bonomi <andrea.bonomi@gmail.com>'
-__version__ = '1.1.1'
+__version__ = '1.2.0'
 
 from airflow.plugins_manager import AirflowPlugin
 from airflow_aws_cost_explorer.operators.aws_cost_explorer import (
     AWSCostExplorerToS3Operator,
-    AWSCostExplorerToLocalFileOperator
+    AWSCostExplorerToLocalFileOperator,
+)
+from airflow_aws_cost_explorer.operators.aws_bucket_size import (
+    AWSBucketSizeToLocalFileOperator,
+    AWSBucketSizeToS3Operator
 )
 
 __all__ = [
     'AWSCostExplorerPlugin',
     'AWSCostExplorerToS3Operator',
     'AWSCostExplorerToLocalFileOperator',
+    'AWSBucketSizeToLocalFileOperator',
+    'AWSBucketSizeToS3Operator'
 ]
 
 # Plugin
 class AWSCostExplorerPlugin(AirflowPlugin):
     name = 'aws_cost_explorer'
-    operators = [ AWSCostExplorerToS3Operator, AWSCostExplorerToLocalFileOperator ]
+    operators = [
+        AWSCostExplorerToS3Operator,
+        AWSCostExplorerToLocalFileOperator,
+        AWSBucketSizeToLocalFileOperator,
+        AWSBucketSizeToS3Operator
+    ]
     flask_blueprints = []
     hooks = []
     executors = []

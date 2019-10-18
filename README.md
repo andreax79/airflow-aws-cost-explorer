@@ -1,7 +1,8 @@
 # Airflow AWS Cost Explorer Plugin
 A plugin for [Apache Airflow](https://github.com/apache/airflow) that allows
 you to export [AWS Cost Explorer](https://aws.amazon.com/aws-cost-management/aws-cost-explorer/)
-data to local file or S3 in Parquet, JSON, or CSV format.
+as [S3](https://docs.aws.amazon.com/AmazonS3/latest/dev/cloudwatch-monitoring.html) metrics to
+local file or S3 in Parquet, JSON, or CSV format.
 
 ### System Requirements
 
@@ -71,6 +72,46 @@ data to local file or S3 in Parquet, JSON, or CSV format.
 
 ```
 
+### AWSBucketSizeToS3Operator
+```AWS Bucket Size to S3 Operator
+
+    :param day:             Date to be exported as string in YYYY-MM-DD format or date/datetime instance (default: yesterday)
+    :type day:              str, date or datetime
+    :param aws_conn_id:     Cost Explorer AWS connection id (default: aws_default)
+    :type aws_conn_id:      str
+    :param region_name:     Cost Explorer AWS Region
+    :type region_name:      str
+    :param s3_conn_id:      Destination S3 connection id (default: s3_default)
+    :type s3_conn_id:       str
+    :param s3_bucket:       Destination S3 bucket
+    :type s3_bucket:        str
+    :param s3_key:          Destination S3 key
+    :type s3_key:           str
+    :param file_format:     Destination file format (parquet, json or csv default: parquet)
+    :type file_format:      str or FileFormat
+    :param metrics:         Metrics (default: bucket_size, number_of_objects)
+    :type metrics:          list
+
+```
+
+### AWSBucketSizeToLocalFileOperator
+```AWS Bucket Size to local file Operator
+
+    :param day:             Date to be exported as string in YYYY-MM-DD format or date/datetime instance (default: yesterday)
+    :type day:              str, date or datetime
+    :param aws_conn_id:     Cost Explorer AWS connection id (default: aws_default)
+    :type aws_conn_id:      str
+    :param region_name:     Cost Explorer AWS Region
+    :type region_name:      str
+    :param destination:     Destination file complete path
+    :type destination:      str
+    :param file_format:     Destination file format (parquet, json or csv default: parquet)
+    :type file_format:      str or FileFormat
+    :param metrics:         Metrics (default: bucket_size, number_of_objects)
+    :type metrics:          list
+
+```
+
 ### Example
 
 ```
@@ -116,3 +157,4 @@ data to local file or S3 in Parquet, JSON, or CSV format.
 * Apache Arrow - https://github.com/apache/arrow
 * fastparquet - https://github.com/dask/fastparquet
 * AWS Cost Explorer - https://aws.amazon.com/aws-cost-management/aws-cost-explorer/ [API Reference](https://docs.aws.amazon.com/aws-cost-management/latest/APIReference/API_GetCostAndUsage.html)
+* S3 CloudWatch Metrics - https://docs.aws.amazon.com/AmazonS3/latest/dev/cloudwatch-monitoring.html

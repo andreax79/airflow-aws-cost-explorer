@@ -115,4 +115,5 @@ venv.bak/
 /test_virtualenv/*.pid
 /test_virtualenv/dags/.gitignore
 /cost_explorer
+/bucket_size
 
