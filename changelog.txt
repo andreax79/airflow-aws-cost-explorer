@@ -43,3 +43,11 @@
 ### Add
 
 - add bucket size & object number operator
+
+## 1.3.0
+
+2019-10-21
+
+### Add
+
+- add storage_types parameter AWSCostExplorerToLocalFileOperator and AWSCostExplorerToS3Operator operators

@@ -53,6 +53,8 @@ class FileFormat(Enum):
 
 class AbstractOperator(BaseOperator):
 
+    FileFormat = FileFormat
+
     def get_metrics(
             self,
             day,

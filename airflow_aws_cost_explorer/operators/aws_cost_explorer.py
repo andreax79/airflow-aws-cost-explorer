@@ -20,7 +20,6 @@ from datetime import timedelta
 from airflow.utils.decorators import apply_defaults
 from airflow_aws_cost_explorer.operators.commons import (
     AbstractOperator,
-    FileFormat,
     DEFAULT_AWS_CONN_ID,
     DEFAULT_S3_CONN_ID,
     DEFAULT_FORMAT
@@ -29,8 +28,7 @@ from airflow_aws_cost_explorer.operators.commons import (
 __all__ = [
     'AWSCostExplorerToLocalFileOperator',
     'AWSCostExplorerToS3Operator',
-    'Metric',
-    'FileFormat'
+    'Metric'
 ]
 
 DEFAULT_METRICS = [ 'UnblendedCost', 'BlendedCost' ]
@@ -42,6 +40,7 @@ Metric = Enum('Metric', 'AmortizedCost BlendedCost NetAmortizedCost NetUnblended
 class AbstractAWSCostExplorerOperator(AbstractOperator):
 
     dtype = DTYPE
+    Metric = Metric
 
     def get_metrics_perform_query(self, ds, metrics, aws_hook, region_name):
         ce = aws_hook.get_client_type('ce', region_name=region_name)
